@@ -250,9 +250,7 @@ paths:
       tags:
         - store
       summary: Find purchase order by ID
-      description: >-
-        For valid response try integer IDs with value >= 1 and <= 10. Other
-        values will generated exceptions
+      description: ''
       operationId: getOrderById
       produces:
         - application/json
@@ -263,8 +261,6 @@ paths:
           description: ID of book that needs to be fetched
           required: true
           type: integer
-          maximum: 10
-          minimum: 1
           format: int64
       responses:
         '200':
@@ -279,9 +275,7 @@ paths:
       tags:
         - store
       summary: Delete purchase order by ID
-      description: >-
-        For valid response try integer IDs with positive integer value. Negative
-        or non-integer values will generate API errors
+      description: ''
       operationId: deleteOrder
       produces:
         - application/json
@@ -554,19 +548,15 @@ definitions:
       bookId:
         type: integer
         format: int64
-      quantity:
+      userId:
         type: integer
-        format: int32
-      shipDate:
-        type: string
-        format: date-time
+        format: int64      
       status:
         type: string
         description: Order Status
         enum:
           - placed
           - approved
-          - delivered
       complete:
         type: boolean
     xml:
