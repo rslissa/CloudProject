@@ -1,0 +1,583 @@
+swagger: '2.0'
+info:
+  description: >-
+    This is the documentation of the MoreCode RESTful API.  
+  version: 1.0
+  title: MoreCode RESTful API
+basePath: /v1
+tags:
+  - name: language
+    description: Operations about programming language
+  - name: user
+    description: Operations about user
+  - name: expertise
+    description: Operations about the corrispondence of each user and its known programming languages
+  - name: meeting 
+    description: Operations about the meeting of two users
+schemes:
+  - https
+  - http
+paths:
+  /language:
+    post:
+      tags:
+        - language
+      summary: Add a new programming language to the site
+      description: ''
+      operationId: addLanguage
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Language object that needs to be added to the site
+          required: true
+          schema:
+            $ref: '#/definitions/Language'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '405':
+          description: Invalid input
+    put:
+      tags:
+        - language
+      summary: Update an existing programming language
+      description: ''
+      operationId: updateLanguage
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Programming Language object that needs to be added to the site
+          required: true
+          schema:
+            $ref: '#/definitions/Language'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Language not found
+        '405':
+          description: Validation exception
+  '/language/{languageId}':
+    get:
+      tags:
+        - language
+      summary: Find Programming Language by ID
+      description: Returns a single Language
+      operationId: getLanguageById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: languageId
+          in: path
+          description: ID of Programming Language to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Language'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Language not found
+    delete:
+      tags:
+        - language
+      summary: Deletes a programming language
+      operationId: deleteLanguage
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: languageId
+          in: path
+          description: Language ID to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Language not found
+  /user/createWithList:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: ''
+      operationId: createUsersWithListInput
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: List of user object
+          required: true
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+  '/user/{username}':
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+    put:
+      tags:
+        - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be updated
+          required: true
+          type: string
+        - in: body
+          name: body
+          description: Updated user object
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: true
+          type: string
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: true
+          type: string
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Expires-After:
+              type: string
+              format: date-time
+              description: date in UTC when token expires
+            X-Rate-Limit:
+              type: integer
+              format: int32
+              description: calls per hour allowed by the user
+          schema:
+            type: string
+        '400':
+          description: Invalid username/password supplied
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      produces:
+        - application/json
+        - application/xml
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Created user object
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        default:
+          description: successful operation
+  /expertise:
+    post:
+      tags:
+        - expertise
+      summary: Add a new expertise object to the site
+      description: ''
+      operationId: addExpertise
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Expertise object that needs to be added to the site
+          required: true
+          schema:
+            $ref: '#/definitions/Expertise'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '405':
+          description: Invalid input
+    put:
+      tags:
+        - expertise
+      summary: Update an existing expertise object
+      description: ''
+      operationId: updateExpertise
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: expertise object object that needs to be added to the site
+          required: true
+          schema:
+            $ref: '#/definitions/Expertise'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Expertise not found
+        '405':
+          description: Validation exception
+  '/expertise/{expertiseId}':
+    get:
+      tags:
+        - expertise
+      summary: Find expertise object by ID
+      description: Returns a single Expertise object
+      operationId: getExpertiseById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: expertiseId
+          in: path
+          description: ID of expertise object to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Expertise'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Expertise object not found
+    delete:
+      tags:
+        - expertise
+      summary: Delete an expertise object
+      operationId: deleteExpertise
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: expertiseId
+          in: path
+          description: Expertise ID to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Expertise not found
+  /meeting:
+    post:
+      tags:
+        - meeting
+      summary: Add a new meeting to the site
+      description: ''
+      operationId: addLanguage
+      consumes:
+        - application/json
+        - application/xml
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Meeting that needs to be added to the site
+          required: true
+          schema:
+            $ref: '#/definitions/Meeting'
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/ApiResponse'
+        '405':
+          description: Invalid input
+  '/meeting/{meetingId}':
+    get:
+      tags:
+        - meeting
+      summary: Find meeting by ID
+      description: Returns a single Meeting
+      operationId: getLanguageById
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: meetingId
+          in: path
+          description: ID of meeting to return
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: successful operation
+          schema:
+            $ref: '#/definitions/Meeting'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Meeting not found
+    delete:
+      tags:
+        - meeting
+      summary: Deletes a meeting
+      operationId: deleteLanguage
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - name: meetingId
+          in: path
+          description: Meeting ID to delete
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Meeting not found
+definitions:
+  ApiResponse:
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+        example: 200
+      type:
+        type: string
+        example: OK
+      message:
+        type: string
+        example: Message received
+  Meeting:
+    type: object
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      date:
+        type: string 
+        format: date-time
+      assistantId:
+        type: integer
+        format: int64
+        minimum: 1
+      assistedId:
+        type: integer
+        format: int64
+        minimum: 1
+      languageId:
+        type: integer
+        format: int64
+        minimum: 1
+    xml:
+      name: Meeting
+  Language:
+    type: object
+    required:
+      - id
+      - name
+      - description
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      name:
+        type: string
+        example: Python
+      description:
+        type: string
+        example: Python is one of the most famous object-oriented programming language
+    xml:
+      name: Language
+  Expertise:
+    type: object
+    required:
+      - id
+      - userId
+      - languageId
+      - expertiseLevel
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      userId:
+        type: integer
+        format: int64
+        minimum: 1
+      languageId:
+        type: integer
+        format: int64
+        minimum: 1
+      expertiseLevel:
+        type: integer
+        format: int64
+        minimum: 1
+        maximum: 5
+    xml:
+      name: Expertise
+  User:
+    type: object
+    required:
+      - id
+      - username
+      - email
+      - password
+      - creditsNumber
+    properties:
+      id:
+        type: integer
+        format: int64
+        minimum: 1
+      username:
+        type: string
+      firstName:
+        type: string
+      lastName:
+        type: string
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      creditsNumber:
+        type: integer
+        format: int64
+    xml:
+      name: User
