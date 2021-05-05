@@ -1,8 +1,7 @@
 swagger: '2.0'
 info:
-  description: >-
-    This is the documentation of the MoreCode RESTful API.  
-  version: 1.0
+  description: This is the documentation of the MoreCode RESTful API.  
+  version: 1.0.0
   title: MoreCode RESTful API
 basePath: /v1
 tags:
@@ -14,6 +13,8 @@ tags:
     description: Operations about the corrispondence of each user and its known programming languages
   - name: meeting 
     description: Operations about the meeting of two users
+  - name: review
+    description: Operation about the reviews of an user developer
 schemes:
   - https
   - http
@@ -400,7 +401,7 @@ paths:
         - meeting
       summary: Add a new meeting to the site
       description: ''
-      operationId: addLanguage
+      operationId: addMeeting
       consumes:
         - application/json
         - application/xml
@@ -427,7 +428,7 @@ paths:
         - meeting
       summary: Find meeting by ID
       description: Returns a single Meeting
-      operationId: getLanguageById
+      operationId: getMeetingById
       produces:
         - application/json
         - application/xml
@@ -451,7 +452,7 @@ paths:
       tags:
         - meeting
       summary: Deletes a meeting
-      operationId: deleteLanguage
+      operationId: deleteMeeting
       produces:
         - application/json
         - application/xml
@@ -467,6 +468,79 @@ paths:
           description: Invalid ID supplied
         '404':
           description: Meeting not found
+  /review:
+      post:
+        tags:
+          - review
+        summary: Add a new review to the site
+        description: ''
+        operationId: addReview
+        consumes:
+          - application/json
+          - application/xml
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - in: body
+            name: body
+            description: Review that needs to be added to the site
+            required: true
+            schema:
+              $ref: '#/definitions/Review'
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/ApiResponse'
+          '405':
+            description: Invalid input
+  '/review/{reviewId}':
+      get:
+        tags:
+          - review
+        summary: Find review by ID
+        description: Returns a single Review
+        operationId: getReviewById
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - name: reviewId
+            in: path
+            description: ID of review to return
+            required: true
+            type: integer
+            format: int64
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/Review'
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Review not found
+      delete:
+        tags:
+          - review
+        summary: Deletes a review
+        operationId: deleteReview
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - name: reviewId
+            in: path
+            description: Review ID to delete
+            required: true
+            type: integer
+            format: int64
+        responses:
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Review not found
 definitions:
   ApiResponse:
     type: object
@@ -581,3 +655,34 @@ definitions:
         format: int64
     xml:
       name: User
+  Review:
+    type: object
+    required:
+      - username
+      - reviewNumber
+      - rating
+      - language
+      - description
+      - date
+    properties:
+      username:
+        type: string 
+      reviewNumber:
+        type: integer
+        format: int64
+        minimum: 1
+      rating:
+        type: integer
+        format: int64
+        minimum: 1        
+      language:
+        type: string
+        example: HTML
+      description:
+        type: string
+        example: L'utente test mi ha aiutato a sviluppare l interfaccia grafica del servizio, consigliato.
+      date:
+        type: string 
+        format: date-time
+    xml:
+      name: Review
