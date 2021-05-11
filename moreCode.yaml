@@ -171,34 +171,6 @@ paths:
           description: Invalid username supplied
         '404':
           description: User not found
-    put:
-      tags:
-        - user
-      summary: Updated user
-      description: This can only be done by the logged in user.
-      operationId: updateUser
-      consumes:
-        - application/json
-      produces:
-        - application/json
-        - application/xml
-      parameters:
-        - name: username
-          in: path
-          description: name that need to be updated
-          required: true
-          type: string
-        - in: body
-          name: body
-          description: Updated user object
-          required: true
-          schema:
-            $ref: '#/definitions/User'
-      responses:
-        '400':
-          description: Invalid user supplied
-        '404':
-          description: User not found
     delete:
       tags:
         - user
@@ -292,6 +264,29 @@ paths:
       responses:
         default:
           description: successful operation
+    put:
+      tags:
+        - user
+      summary: Updated user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      consumes:
+        - application/json
+      produces:
+        - application/json
+        - application/xml
+      parameters:
+        - in: body
+          name: body
+          description: Updated user object
+          required: true
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        '400':
+          description: Invalid user supplied
+        '404':
+          description: User not found
   /expertise:
     post:
       tags:
@@ -541,6 +536,79 @@ paths:
             description: Invalid ID supplied
           '404':
             description: Review not found
+  /chat:
+      post:
+        tags:
+          - chat
+        summary: Add a new chat to the site
+        description: ''
+        operationId: addChat
+        consumes:
+          - application/json
+          - application/xml
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - in: body
+            name: body
+            description: Chat that needs to be added to the site
+            required: true
+            schema:
+              $ref: '#/definitions/Chat'
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/ApiResponse'
+          '405':
+            description: Invalid input
+  '/chat/{chatId}':
+      get:
+        tags:
+          - chat
+        summary: Find chat by ID
+        description: Returns a single Chat
+        operationId: getChatById
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - name: chatId
+            in: path
+            description: ID of chat to return
+            required: true
+            type: integer
+            format: int64
+        responses:
+          '200':
+            description: successful operation
+            schema:
+              $ref: '#/definitions/Chat'
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Chat not found
+      delete:
+        tags:
+          - chat
+        summary: Deletes a chat
+        operationId: deleteChat
+        produces:
+          - application/json
+          - application/xml
+        parameters:
+          - name: chatId
+            in: path
+            description: Chat ID to delete
+            required: true
+            type: integer
+            format: int64
+        responses:
+          '400':
+            description: Invalid ID supplied
+          '404':
+            description: Chat not found
 definitions:
   ApiResponse:
     type: object
@@ -686,3 +754,25 @@ definitions:
         format: date-time
     xml:
       name: Review
+  Chat:
+    type: object
+    required:
+      - sender
+      - receiver
+      - date
+      - message
+    properties:
+      sender:
+        type: string 
+        example: utente_1 
+      receiver:
+        type: string
+        example: utente_2 
+      date:
+        type: string 
+        format: date-time
+      message:
+        type: string
+        example: ciao! mi servirebbe un aiuto in python.
+    xml:
+      name: Chat
